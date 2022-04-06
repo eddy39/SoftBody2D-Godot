@@ -1,0 +1,213 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://icon.png" type="Texture" id=1]
+[ext_resource path="res://Scripts/TestScene2.gd" type="Script" id=2]
+[ext_resource path="res://SoftBody2DCircle.tscn" type="PackedScene" id=4]
+[ext_resource path="res://SoftBody2D.tscn" type="PackedScene" id=5]
+
+[sub_resource type="ConvexPolygonShape2D" id=1]
+points = PoolVector2Array( 71, 64, 0, 64, 0, 0, 71, 0 )
+
+[sub_resource type="TileSet" id=2]
+0/name = "icon.png 0"
+0/texture = ExtResource( 1 )
+0/tex_offset = Vector2( 0, 0 )
+0/modulate = Color( 1, 1, 1, 1 )
+0/region = Rect2( -5, 2, 71, 64 )
+0/tile_mode = 0
+0/occluder_offset = Vector2( 0, 0 )
+0/navigation_offset = Vector2( 0, 0 )
+0/shape_offset = Vector2( 0, 0 )
+0/shape_transform = Transform2D( 1, 0, 0, 1, 0, 0 )
+0/shape = SubResource( 1 )
+0/shape_one_way = false
+0/shape_one_way_margin = 1.0
+0/shapes = [ {
+"autotile_coord": Vector2( 0, 0 ),
+"one_way": false,
+"one_way_margin": 1.0,
+"shape": SubResource( 1 ),
+"shape_transform": Transform2D( 1, 0, 0, 1, 0, 0 )
+} ]
+0/z_index = 0
+
+[node name="TestScene2" type="Node2D"]
+script = ExtResource( 2 )
+
+[node name="TileMap" type="TileMap" parent="."]
+tile_set = SubResource( 2 )
+show_collision = true
+format = 1
+tile_data = PoolIntArray( 65560, 0, 0, 131096, 0, 0, 196608, 0, 0, 196632, 0, 0, 262144, 0, 0, 262168, 0, 0, 327680, 0, 0, 327704, 0, 0, 393216, 0, 0, 393223, 0, 0, 393240, 0, 0, 458752, 0, 0, 458758, 0, 0, 458759, 0, 0, 458760, 0, 0, 458776, 0, 0, 524288, 0, 0, 524289, 0, 0, 524290, 0, 0, 524291, 0, 0, 524292, 0, 0, 524293, 0, 0, 524294, 0, 0, 524295, 0, 0, 524296, 0, 0, 524297, 0, 0, 524298, 0, 0, 524299, 0, 0, 524300, 0, 0, 524311, 0, 0, 524312, 0, 0, 589836, 0, 0, 589847, 0, 0, 655372, 0, 0, 655373, 0, 0, 655374, 0, 0, 655375, 0, 0, 655376, 0, 0, 655377, 0, 0, 655378, 0, 0, 655379, 0, 0, 655380, 0, 0, 655381, 0, 0, 655382, 0, 0, 655383, 0, 0 )
+
+[node name="SoftBody2DCircle" parent="." instance=ExtResource( 4 )]
+position = Vector2( 254.846, 268.06 )
+
+[node name="SoftBody2D" parent="." instance=ExtResource( 5 )]
+position = Vector2( 747.548, 234.081 )
+
+[node name="Control" type="Control" parent="."]
+margin_right = 40.0
+margin_bottom = 40.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="speed" type="HSlider" parent="Control"]
+margin_right = 199.0
+margin_bottom = 27.0
+min_value = 1.0
+value = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="Control/speed"]
+margin_left = 202.656
+margin_top = 5.04538
+margin_right = 242.656
+margin_bottom = 19.0454
+text = "speed"
+
+[node name="acceleration" type="HSlider" parent="Control"]
+margin_left = 1.26134
+margin_top = 22.7042
+margin_right = 200.261
+margin_bottom = 49.7042
+max_value = 200.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="Control/acceleration"]
+margin_left = 202.656
+margin_top = 5.04538
+margin_right = 242.656
+margin_bottom = 19.0454
+text = "acceleration"
+
+[node name="springFactor" type="HSlider" parent="Control"]
+margin_left = 1.26134
+margin_top = 44.1471
+margin_right = 200.261
+margin_bottom = 71.1471
+max_value = 50.0
+step = 0.1
+value = 10.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="Control/springFactor"]
+margin_left = 202.656
+margin_top = 5.04538
+margin_right = 242.656
+margin_bottom = 19.0454
+text = "springFactor"
+
+[node name="pressure" type="HSlider" parent="Control"]
+margin_left = 0.840912
+margin_top = 62.2263
+margin_right = 199.841
+margin_bottom = 89.2263
+max_value = 50.0
+step = 0.1
+value = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="Control/pressure"]
+margin_left = 202.656
+margin_top = 5.04538
+margin_right = 242.656
+margin_bottom = 19.0454
+text = "pressure"
+
+[node name="collisionFactor" type="HSlider" parent="Control"]
+margin_left = 2.10223
+margin_top = 82.4079
+margin_right = 201.102
+margin_bottom = 109.408
+max_value = 50.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="Control/collisionFactor"]
+margin_left = 202.656
+margin_top = 5.04538
+margin_right = 242.656
+margin_bottom = 19.0454
+text = "collisionFactor"
+
+[node name="Stiffness" type="HSlider" parent="Control"]
+margin_left = 2.94315
+margin_top = 104.271
+margin_right = 201.943
+margin_bottom = 131.271
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="Control/Stiffness"]
+margin_left = 202.656
+margin_top = 5.04538
+margin_right = 242.656
+margin_bottom = 19.0454
+text = "Stiffness"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="points" type="HSlider" parent="Control"]
+margin_left = 3.78403
+margin_top = 126.134
+margin_right = 202.784
+margin_bottom = 153.134
+min_value = 5.0
+value = 5.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="Control/points"]
+margin_left = 202.656
+margin_top = 5.04538
+margin_right = 242.656
+margin_bottom = 19.0454
+text = "points"
+
+[node name="area" type="HSlider" parent="Control"]
+margin_left = 3.78403
+margin_top = 147.157
+margin_right = 202.784
+margin_bottom = 174.157
+min_value = 0.5
+max_value = 5.0
+step = 0.1
+value = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="Control/area"]
+margin_left = 202.656
+margin_top = 5.04538
+margin_right = 242.656
+margin_bottom = 19.0454
+text = "area"
+
+[node name="MoveRelAbs" type="CheckButton" parent="Control"]
+margin_left = 302.04
+margin_top = 3.77551
+margin_right = 378.04
+margin_bottom = 43.7755
+pressed = true
+
+[node name="MoveRel" type="Label" parent="Control/MoveRelAbs"]
+margin_left = 75.5099
+margin_top = 7.55096
+margin_right = 115.51
+margin_bottom = 21.551
+text = "Move relativ"

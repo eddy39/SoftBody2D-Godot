@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://Scripts/SoftBody2D.cs" type="Script" id=1]
+[ext_resource path="res://SoftBody2D_Base.tscn" type="PackedScene" id=2]
+
+[node name="SoftBody2D" instance=ExtResource( 2 )]
+script = ExtResource( 1 )
+
+[node name="Polygon2D" parent="." index="0"]
+position = Vector2( 0, 1.88776 )
+color = Color( 0.839216, 0.203922, 0.203922, 1 )
+polygon = PoolVector2Array( 18.2287, 8.76648, 38.994, 69.1744, -10.0875, 97.4906, -44.067, 67.2866, -64.8322, 29.5317, -38.4037, -32.764, 12.5655, -66.7434, 106.953, -74.2944, 135.269, -25.213, 142.82, 35.1949, 112.616, 108.817, 114.504, 31.4194, 110.728, -17.662, 88.0754, -49.7537, 25.7797, -44.0905, -10.0875, -23.3252, -34.6282, 21.9807, -25.1895, 44.6337, -8.19971, 61.6234 )
