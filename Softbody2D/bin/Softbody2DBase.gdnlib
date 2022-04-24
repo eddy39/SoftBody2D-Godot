@@ -1,0 +1,15 @@
+[general]
+
+singleton=false
+load_once=true
+symbol_prefix="godot_"
+reloudable=false
+reloadable=true
+
+[entry]
+
+Windows.64="res://bin/win64/Softbody2DBase.dll"
+
+[dependencies]
+
+Windows.64=[  ]

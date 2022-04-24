@@ -1,0 +1,8 @@
+[gd_resource type="NativeScript" load_steps=2 format=2]
+
+[ext_resource path="res://bin/Softbody2DBase.gdnlib" type="GDNativeLibrary" id=1]
+
+[resource]
+resource_name = "Softbody2DBase"
+class_name = "Softbody2DPolygon"
+library = ExtResource(1)
