@@ -1,0 +1,3 @@
+D:/Projekte/GodotProjects/cppTest/godot-cpp/out/build/x64-Debug/CMakeFiles/godot-cpp.dir
+D:/Projekte/GodotProjects/cppTest/godot-cpp/out/build/x64-Debug/CMakeFiles/edit_cache.dir
+D:/Projekte/GodotProjects/cppTest/godot-cpp/out/build/x64-Debug/CMakeFiles/rebuild_cache.dir
