@@ -40,6 +40,9 @@ void Softbody2DPolygon::_register_methods()
     register_property("areaInitial",&Softbody2DPolygon::areaInitial,1.0f);
 
     register_property("lengthSet",&Softbody2DPolygon::lengthSet,40.0f);
+    register_property("ObserverAreaRadius",&Softbody2DPolygon::ObserverAreaRadius,5.0f);
+
+
 }
 
 Softbody2DPolygon::Softbody2DPolygon()
@@ -108,7 +111,7 @@ void Softbody2DPolygon::initObserverArea()
     ObserverArea = Area2D::_new();
     AreaShape = CollisionPolygon2D::_new();
     PoolVector2Array AreaPolygon = PoolVector2Array();
-    for (int i = 0; i < points; i++) AreaPolygon.append(blob[i]+normals[i]*collisionRadius*2);
+    for (int i = 0; i < points; i++) AreaPolygon.append(blob[i]+normals[i]*ObserverAreaRadius);
     AreaShape-> set_polygon(AreaPolygon);
     ObserverArea ->add_child(AreaShape);
     add_child(ObserverArea);
@@ -291,6 +294,12 @@ void Softbody2DPolygon::_ready()
     if (useSoftbody==false) useSoftbody=true;
     if (allowPhysics==false) allowPhysics=true;
     
+    if (acceleration==0)  use_acceleration=false;
+    if (springFactor==0)  use_springFactor=false;
+    if (pressureFactor==0)  use_pressureFactor=false;
+    if (collisionFactor==0)  use_collisionFactor=false;
+    if (stiffnessFactor==0)  use_stiffnessFactor=false;
+
 
     curve = Curve2D::_new();
     adjustPolygon();
@@ -320,7 +329,7 @@ void Softbody2DPolygon::updateObserverArea()
 {
    
     PoolVector2Array AreaPolygon = PoolVector2Array();
-    for (int i = 0; i < points; i++) AreaPolygon.append(blob[i]+normals[i]*collisionRadius*2);
+    for (int i = 0; i < points; i++) AreaPolygon.append(blob[i]+normals[i]*ObserverAreaRadius);
     AreaShape-> set_polygon(AreaPolygon);
 
 }
@@ -344,24 +353,27 @@ void Softbody2DPolygon::SoftbodyPhysics(float delta)
         //#################### Calculate changes in outer springs
         int nextIndex = (i+1)%points;
         Vector2 change;
-        Vector2 Distance = blob[i]-blob[nextIndex];
-        if (Distance.length()>lengths[i]*1.2)// if things are too far apart pull back together
+        if (use_springFactor)
         {
-            change = Distance.normalized() * (Distance.length()-lengths[i])/ 2 *springFactor;// setting Distance back to length
-            changeSpring[i]-= change   ;
-            changeSpring[nextIndex]+= change  ;
-            
-        } else if (Distance.length()<lengths[i]*0.5){
-            change = Distance.normalized() * (Distance.length()-lengths[i])/ 2 *springFactor;// setting Distance back to length
-            changeSpring[i]-= change ;
-            changeSpring[nextIndex]+= change  ;
+             Vector2 Distance = blob[i]-blob[nextIndex];
+            if (Distance.length()>lengths[i]*1.2)// if things are too far apart pull back together
+            {
+                change = Distance.normalized() * (Distance.length()-lengths[i])/ 2 *springFactor;// setting Distance back to length
+                changeSpring[i]-= change   ;
+                changeSpring[nextIndex]+= change  ;
+                
+            } else if (Distance.length()<lengths[i]*0.5){
+                change = Distance.normalized() * (Distance.length()-lengths[i])/ 2 *springFactor;// setting Distance back to length
+                changeSpring[i]-= change ;
+                changeSpring[nextIndex]+= change  ;
+            }
         }
-        
-
+        if (use_stiffnessFactor)
+        {
         // ############ calculate changes for stiffness
-        
         change= (center+blobInitial2Center[i])-blob[i];
         changeStiffness[i] += change*stiffnessFactor ;
+        }
         // ############ calculate changes for Collision
         
         if ((blobCollisions[i] -> get_slide_count()>0))
@@ -400,7 +412,7 @@ void Softbody2DPolygon::SoftbodyPhysics(float delta)
     float deltaArea = area- getCurArea();
     float dilationDistance = deltaArea/area;
         
-    if (abs(dilationDistance)>0.01) 
+    if ((abs(dilationDistance)>0.01) & use_pressureFactor) 
     {
         for (int i = 0; i < points; i++)
         {

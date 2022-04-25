@@ -39,6 +39,8 @@ void Softbody2DCircle::_register_methods()
     
     register_property("useSoftbody",&Softbody2DCircle::useSoftbody,true);
     register_property("createObserverarea",&Softbody2DCircle::createObserverarea,false);
+    register_property("ObserverAreaRadius",&Softbody2DCircle::ObserverAreaRadius,5.0f);
+
 
 }
 
@@ -107,7 +109,7 @@ void Softbody2DCircle::initObserverArea()
     ObserverArea = Area2D::_new();
     AreaShape = CollisionPolygon2D::_new();
     PoolVector2Array AreaPolygon = PoolVector2Array();
-    for (int i = 0; i < points; i++) AreaPolygon.append(blob[i]+normals[i]*collisionRadius*2);
+    for (int i = 0; i < points; i++) AreaPolygon.append(blob[i]+normals[i]*ObserverAreaRadius);
     AreaShape-> set_polygon(AreaPolygon);
     ObserverArea ->add_child(AreaShape);
     add_child(ObserverArea);
@@ -264,6 +266,12 @@ void Softbody2DCircle::_ready()
     if (useSoftbody==false) useSoftbody=true;
     if (allowPhysics==false) allowPhysics=true;
 
+    if (acceleration==0)  use_acceleration=false;
+    if (springFactor==0)  use_springFactor=false;
+    if (pressureFactor==0)  use_pressureFactor=false;
+    if (collisionFactor==0)  use_collisionFactor=false;
+    if (stiffnessFactor==0)  use_stiffnessFactor=false;
+
     
     curve = Curve2D::_new();
     adjustPolygon();
@@ -292,7 +300,7 @@ void Softbody2DCircle::updateObserverArea()
 {
    
     PoolVector2Array AreaPolygon = PoolVector2Array();
-    for (int i = 0; i < points; i++) AreaPolygon.append(blob[i]+normals[i]*collisionRadius*2);
+    for (int i = 0; i < points; i++) AreaPolygon.append(blob[i]+normals[i]*ObserverAreaRadius);
     AreaShape-> set_polygon(AreaPolygon);
 
 }
@@ -315,24 +323,29 @@ void Softbody2DCircle::SoftbodyPhysics(float delta)
         //#################### Calculate changes in outer springs
         int nextIndex = (i+1)%points;
         Vector2 change;
-        Vector2 Distance = blob[i]-blob[nextIndex];
-        if (Distance.length()>lengths[i]*1.2)// if things are too far apart pull back together
+        if (use_springFactor)
         {
-            change = Distance.normalized() * (Distance.length()-lengths[i])/ 2 *springFactor;// setting Distance back to length
-            changeSpring[i]-= change   ;
-            changeSpring[nextIndex]+= change  ;
-            
-        } else if (Distance.length()<lengths[i]*0.5){
-            change = Distance.normalized() * (Distance.length()-lengths[i])/ 2 *springFactor;// setting Distance back to length
-            changeSpring[i]-= change ;
-            changeSpring[nextIndex]+= change  ;
+            Vector2 Distance = blob[i]-blob[nextIndex];
+            if (Distance.length()>lengths[i]*1.2)// if things are too far apart pull back together
+            {
+                change = Distance.normalized() * (Distance.length()-lengths[i])/ 2 *springFactor;// setting Distance back to length
+                changeSpring[i]-= change   ;
+                changeSpring[nextIndex]+= change  ;
+                
+            } else if (Distance.length()<lengths[i]*0.5){
+                change = Distance.normalized() * (Distance.length()-lengths[i])/ 2 *springFactor;// setting Distance back to length
+                changeSpring[i]-= change ;
+                changeSpring[nextIndex]+= change  ;
+            }
         }
-        
 
         // ############ calculate changes for stiffness
+        if (use_springFactor)
+        {
+            change= (center+blobInitial2Center[i])-blob[i];
+            changeStiffness[i] += change*stiffnessFactor ;
+        }
         
-        change= (center+blobInitial2Center[i])-blob[i];
-        changeStiffness[i] += change*stiffnessFactor ;
         // ############ calculate changes for Collision
         
         if ((blobCollisions[i] -> get_slide_count()>0))
@@ -372,7 +385,7 @@ void Softbody2DCircle::SoftbodyPhysics(float delta)
     float deltaArea = area- getCurArea();
     float dilationDistance = deltaArea/area;
         
-    if (abs(dilationDistance)>0.01) 
+    if ((abs(dilationDistance)>0.01) & use_pressureFactor) 
     {
         for (int i = 0; i < points; i++)
         {

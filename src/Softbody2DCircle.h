@@ -91,12 +91,20 @@ namespace godot
             Node2D* prnt;// this is parent
             CollisionPolygon2D* AreaShape;
             Area2D* ObserverArea;
+            float ObserverAreaRadius = 5;
+
             int body_count = 0;
             bool useSoftbody = true;
             bool moveParent = false;
             bool createObserverarea = false;
             bool observerareaExists = false;
             bool collisionHappened = true;
+
+            bool use_acceleration = true;
+            bool use_springFactor = true;
+            bool use_pressureFactor = true;
+            bool use_stiffnessFactor = true;
+            bool use_collisionFactor = true;
 
             Geometry* geometryObj = Geometry::get_singleton();
 
