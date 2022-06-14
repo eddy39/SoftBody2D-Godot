@@ -5,6 +5,7 @@ var controlled_Node1
 var controlled_NodeClick
 
 func _ready():
+	"""
 	$Control/acceleration.connect("value_changed",self,"_on_acc_value_changed")
 	$Control/springFactor.connect("value_changed",self,"_on_springFactor_value_changed")
 	$Control/pressure.connect("value_changed",self,"_on_pressure_value_changed")
@@ -20,13 +21,14 @@ func _ready():
 	$Control/pressureDecay.connect("value_changed",self,"_on_pressureDecay_value_changed")
 	$Control/collisionDecay.connect("value_changed",self,"_on_collisionDecay_value_changed")
 	$Control/stiffnessDecay.connect("value_changed",self,"_on_stiffnessDecay_value_changed")
+	"""
 	controlled_Node = $Polygon2DCircle
 	
 	controlled_NodeClick = $Polygon2D
 	
 	controlled_Node1 = $Polygon2DCircle
 	
-
+"""
 func _on_acc_value_changed(x):
 	controlled_Node.acceleration = x
 func _on_springFactor_value_changed(x):
@@ -63,7 +65,7 @@ func _unhandled_input(event):
 	if event.is_action_pressed("leftClick"):
 		controlled_NodeClick.set("allowPhysics",true);
 		controlled_NodeClick.move_and_slide(controlled_NodeClick.get_local_mouse_position())
-	
+"""
 	
 func _physics_process(delta):
 	#controlled_Node1 wasd controlled

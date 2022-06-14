@@ -19,7 +19,6 @@
 #include <vector>
 #include <math.h>
 #include <string>
-#include <iostream>
 
 namespace godot
 {

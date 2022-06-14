@@ -1,8 +1,9 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://icon.png" type="Texture" id=1]
 [ext_resource path="res://Scripts/TestScene2.gd" type="Script" id=2]
 [ext_resource path="res://Softbody2DCircle_cpp.tscn" type="PackedScene" id=3]
+[ext_resource path="res://Scenes/Control.tscn" type="PackedScene" id=4]
 [ext_resource path="res://Softbody2DPolygon_cpp.tscn" type="PackedScene" id=6]
 
 [sub_resource type="ConvexPolygonShape2D" id=1]
@@ -43,271 +44,30 @@ tile_data = PoolIntArray( 65560, 0, 0, 131096, 0, 0, 196608, 0, 0, 196632, 0, 0,
 [node name="Polygon2D" parent="." instance=ExtResource( 3 )]
 position = Vector2( 1207.69, 155.581 )
 color = Color( 0.156863, 0.717647, 0.717647, 0.737255 )
-moveTo = null
-moving = null
-allowPhysics = null
-moveRel = null
-useSoftbody = null
-center = null
-acceleration = null
-springFactor = null
-pressureFactor = null
-stiffnessFactor = null
-collisionFactor = null
-moveDecay = null
-springDecay = null
-pressureDecay = null
-stiffnessDecay = null
-collisionDecay = null
-createObserverarea = null
-area = null
-areaInitial = null
-lengthSet = null
 
 [node name="Polygon2DCircle" parent="." instance=ExtResource( 6 )]
 position = Vector2( 647.502, 81.1733 )
 color = Color( 0.847059, 0.0941176, 0.85098, 1 )
+moveTo = Vector2( 0, 0 )
+moving = false
+allowPhysics = false
+moveRel = false
+center = Vector2( 0, 0 )
+moveDecay = 0.0
+springDecay = 0.0
+pressureDecay = 0.0
+stiffnessDecay = 0.0
+collisionDecay = 0.0
+acceleration = 80.0
+springFactor = 20.0
+pressureFactor = 20.0
+stiffnessFactor = 10.0
+collisionFactor = 50.0
+area = 1.0
+areaInitial = 1.0
+lengthSet = 40.0
 radius = 200.0
+useSoftbody = true
+createObserverarea = false
 
-[node name="Control" type="Control" parent="."]
-margin_right = 40.0
-margin_bottom = 40.0
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="acceleration" type="HSlider" parent="Control"]
-margin_left = 1.26134
-margin_top = 22.7042
-margin_right = 200.261
-margin_bottom = 49.7042
-max_value = 200.0
-value = 50.0
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Label" type="Label" parent="Control/acceleration"]
-margin_left = 202.656
-margin_top = 5.04538
-margin_right = 242.656
-margin_bottom = 19.0454
-text = "acceleration"
-
-[node name="springFactor" type="HSlider" parent="Control"]
-margin_left = 1.26134
-margin_top = 44.1471
-margin_right = 200.261
-margin_bottom = 71.1471
-max_value = 50.0
-step = 0.1
-value = 20.0
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Label" type="Label" parent="Control/springFactor"]
-margin_left = 202.656
-margin_top = 5.04538
-margin_right = 242.656
-margin_bottom = 19.0454
-text = "springFactor"
-
-[node name="pressure" type="HSlider" parent="Control"]
-margin_left = 0.840912
-margin_top = 62.2263
-margin_right = 199.841
-margin_bottom = 89.2263
-max_value = 50.0
-step = 0.1
-value = 20.0
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Label" type="Label" parent="Control/pressure"]
-margin_left = 202.656
-margin_top = 5.04538
-margin_right = 242.656
-margin_bottom = 19.0454
-text = "pressure"
-
-[node name="collisionFactor" type="HSlider" parent="Control"]
-margin_left = 2.10223
-margin_top = 82.4079
-margin_right = 201.102
-margin_bottom = 109.408
-max_value = 50.0
-value = 20.0
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Label" type="Label" parent="Control/collisionFactor"]
-margin_left = 202.656
-margin_top = 5.04538
-margin_right = 242.656
-margin_bottom = 19.0454
-text = "collisionFactor"
-
-[node name="Stiffness" type="HSlider" parent="Control"]
-margin_left = 2.94315
-margin_top = 104.271
-margin_right = 201.943
-margin_bottom = 131.271
-value = 1.0
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Label" type="Label" parent="Control/Stiffness"]
-margin_left = 202.656
-margin_top = 5.04538
-margin_right = 242.656
-margin_bottom = 19.0454
-text = "Stiffness"
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="area" type="HSlider" parent="Control"]
-margin_left = 3.78403
-margin_top = 126.181
-margin_right = 202.784
-margin_bottom = 153.181
-min_value = 0.5
-max_value = 5.0
-step = 0.1
-value = 1.0
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Label" type="Label" parent="Control/area"]
-margin_left = 202.656
-margin_top = 5.04538
-margin_right = 242.656
-margin_bottom = 19.0454
-text = "area"
-
-[node name="moveDecay" type="HSlider" parent="Control"]
-margin_left = 303.445
-margin_top = 23.5467
-margin_right = 502.445
-margin_bottom = 50.5467
-max_value = 0.99
-step = 0.1
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Label" type="Label" parent="Control/moveDecay"]
-margin_left = 202.656
-margin_top = 5.04538
-margin_right = 242.656
-margin_bottom = 19.0454
-text = "moveDecay"
-
-[node name="springDecay" type="HSlider" parent="Control"]
-margin_left = 304.944
-margin_top = 46.0213
-margin_right = 503.944
-margin_bottom = 73.0213
-max_value = 0.99
-step = 0.1
-value = 0.99
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Label" type="Label" parent="Control/springDecay"]
-margin_left = 202.656
-margin_top = 5.04538
-margin_right = 242.656
-margin_bottom = 19.0454
-text = "springDecay"
-
-[node name="pressureDecay" type="HSlider" parent="Control"]
-margin_left = 304.944
-margin_top = 65.4993
-margin_right = 503.944
-margin_bottom = 92.4993
-max_value = 0.99
-step = 0.1
-value = 0.99
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Label" type="Label" parent="Control/pressureDecay"]
-margin_left = 202.656
-margin_top = 5.04538
-margin_right = 242.656
-margin_bottom = 19.0454
-text = "pressureDecay"
-
-[node name="collisionDecay" type="HSlider" parent="Control"]
-margin_left = 304.944
-margin_top = 83.479
-margin_right = 503.944
-margin_bottom = 110.479
-max_value = 0.99
-step = 0.1
-value = 0.99
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Label" type="Label" parent="Control/collisionDecay"]
-margin_left = 202.656
-margin_top = 5.04538
-margin_right = 242.656
-margin_bottom = 19.0454
-text = "collisionDecay"
-
-[node name="stiffnessDecay" type="HSlider" parent="Control"]
-margin_left = 305.693
-margin_top = 105.954
-margin_right = 504.693
-margin_bottom = 132.954
-max_value = 0.99
-step = 0.1
-value = 0.99
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Label" type="Label" parent="Control/stiffnessDecay"]
-margin_left = 202.656
-margin_top = 5.04538
-margin_right = 242.656
-margin_bottom = 19.0454
-text = "stiffnessDecay"
-
-[node name="MoveRelAbs" type="CheckButton" parent="Control"]
-margin_left = 6.1243
-margin_top = 149.86
-margin_right = 82.1243
-margin_bottom = 189.86
-pressed = true
-
-[node name="MoveRel" type="Label" parent="Control/MoveRelAbs"]
-margin_left = 75.5099
-margin_top = 7.55096
-margin_right = 115.51
-margin_bottom = 21.551
-text = "Move relativ"
-
-[node name="useSoftbody" type="CheckButton" parent="Control"]
-margin_left = 189.667
-margin_top = 149.86
-margin_right = 265.667
-margin_bottom = 189.86
-pressed = true
-
-[node name="MoveRel" type="Label" parent="Control/useSoftbody"]
-margin_left = 75.5099
-margin_top = 7.55096
-margin_right = 115.51
-margin_bottom = 21.551
-text = "useSoftbody"
+[node name="Control" parent="." instance=ExtResource( 4 )]
