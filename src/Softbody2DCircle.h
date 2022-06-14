@@ -18,6 +18,8 @@
 //## Basic includes
 #include <vector>
 #include <math.h>
+#include <string>
+#include <iostream>
 
 namespace godot
 {
@@ -80,6 +82,12 @@ namespace godot
 
             float collisionRadius;
             float splineLength = 12;
+
+            float fps = 30;
+            float fps_ = 30;
+            
+            float timeHelper = 0;
+
             Curve2D* curve = Curve2D::_new();
             PoolVector2Array polygonInitial;
             bool moveRel = false;

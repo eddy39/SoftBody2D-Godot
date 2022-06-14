@@ -18,6 +18,8 @@
 //## Basic includes
 #include <vector>
 #include <math.h>
+#include <string>
+#include <iostream>
 
 namespace godot
 {
@@ -73,6 +75,11 @@ namespace godot
             float pressureDecay_ = 0.0;
             float stiffnessDecay_ = 0.8;
             float collisionDecay_ = 0.8;
+
+            float fps = 30;
+            float fps_ = 30;
+            
+            float timeHelper = 0;
 
             float collisionRadius;
             float splineLength = 12;

@@ -18,6 +18,7 @@ void Softbody2DCircle::_register_methods()
     register_property("allowPhysics",&Softbody2DCircle::allowPhysics,false);
     register_property("moveRel",&Softbody2DCircle::moveRel,false);
     register_property("center",&Softbody2DCircle::center,Vector2(0,0));
+    register_property("moveParent",&Softbody2DCircle::moveParent,false);
 
 
     register_property("moveDecay",&Softbody2DCircle::moveDecay,0.0f);
@@ -41,6 +42,7 @@ void Softbody2DCircle::_register_methods()
     register_property("createObserverarea",&Softbody2DCircle::createObserverarea,false);
     register_property("ObserverAreaRadius",&Softbody2DCircle::ObserverAreaRadius,5.0f);
 
+    register_property("fps",&Softbody2DCircle::fps,30.0f);
 
 }
 
@@ -50,7 +52,45 @@ Softbody2DCircle::Softbody2DCircle()
 }
 Softbody2DCircle::~Softbody2DCircle()
 {
+    curve->free();
+    
+}
 
+void Softbody2DCircle::_init()
+{
+}
+
+
+void Softbody2DCircle::_ready()
+{
+    // all resets
+    if (acceleration==0)  acceleration=acceleration_;
+    if (springFactor==0)  springFactor=springFactor_;
+    if (pressureFactor==0)  pressureFactor=pressureFactor_;
+    if (collisionFactor==0)  collisionFactor=collisionFactor_;
+    if (stiffnessFactor==0)  stiffnessFactor=stiffnessFactor_;
+
+    if (moveDecay==0)  moveDecay=moveDecay_;
+    if (springDecay==0)  springDecay=springDecay_;
+    if (pressureDecay==0)  pressureDecay=pressureDecay_;
+    if (collisionDecay==0)  collisionDecay=collisionDecay_;
+    if (stiffnessDecay==0)  stiffnessDecay=stiffnessDecay_;
+    
+    if (lengthSet==0)  lengthSet=lengthSet_;
+
+    if (useSoftbody==false) useSoftbody=true;
+    if (allowPhysics==false) allowPhysics=true;
+    if (fps==0) fps=fps_;
+
+    if (acceleration==0)  use_acceleration=false;
+    if (springFactor==0)  use_springFactor=false;
+    if (pressureFactor==0)  use_pressureFactor=false;
+    if (collisionFactor==0)  use_collisionFactor=false;
+    if (stiffnessFactor==0)  use_stiffnessFactor=false;
+    timeHelper=0;
+    //
+    resetBlob();
+    
 }
 Vector2 Softbody2DCircle::getPoint(int i)
 {
@@ -106,7 +146,9 @@ void Softbody2DCircle::initBlobCollisions()
 }
 void Softbody2DCircle::initObserverArea()
 {
+    ObserverArea->free();
     ObserverArea = Area2D::_new();
+    AreaShape->free();
     AreaShape = CollisionPolygon2D::_new();
     PoolVector2Array AreaPolygon = PoolVector2Array();
     for (int i = 0; i < points; i++) AreaPolygon.append(blob[i]+normals[i]*ObserverAreaRadius);
@@ -166,17 +208,22 @@ Vector2 Softbody2DCircle::calculateNormal(int i)
     normal = getVectorByAngle(1,angle);
     
     return normal;
-    
 }
 void Softbody2DCircle::resetBlob()
 {
+    curve->free();
+    curve = Curve2D::_new();
+    adjustPolygon();
+    polygonInitial = get_polygon();
+    prnt = Object::cast_to<Node2D>(get_parent());
+
     allowPhysics = false;
     for (size_t i = 0; i < blobCollisions.size(); i++)
     {
         blobCollisions[i]->queue_free();
     }
-    PoolVector2Array polygons = get_polygon();
-    points = (int) ceil(circumfrence/lengthSet);
+    PoolVector2Array polygons = polygonInitial;
+    points = polygons.size();
     lengths = std::vector<float>();
     blobCollisions = std::vector<KinematicBody2D*>();
     changeSpring = std::vector<Vector2>();
@@ -184,7 +231,8 @@ void Softbody2DCircle::resetBlob()
     changeCollision = std::vector<Vector2>();
     changeMove = std::vector<Vector2>();
     changeStiffness = std::vector<Vector2>();
-
+    blobInitial2Center = std::vector<Vector2>();
+    blobColShapes = std::vector<CollisionShape2D *>();
     blob = std::vector<Vector2>();
     normals = std::vector<Vector2>();
     circumfrence = 0;
@@ -201,12 +249,10 @@ void Softbody2DCircle::resetBlob()
         changeStiffness.push_back(Vector2(0,0));
 
     }
-    
     for (size_t i = 0; i < points; i++)
     {
         normals.push_back(calculateNormal(i));
     }
-    
     lengthsInitial = lengths;
     area = getCurArea();
     areaInitial = area;
@@ -218,68 +264,14 @@ void Softbody2DCircle::resetBlob()
     centerChange=Vector2(0,0);// reset centerChange
     // set blobInitial2Center (for stiffness)
     for (int i = 0; i < points; i++) blobInitial2Center.push_back(blob[i]-center);
-    
     initBlobCollisions();
     if (createObserverarea) initObserverArea();
-    
+    move_and_slide(Vector2(0.001,0.001));
     updateCollision();
     updateSprite();
     update();
-    
 }
 
-void Softbody2DCircle::adjustPolygon()
-{
-    // make polygon circle
-    circumfrence = radius * 2.0f * Math_PI ;
-    points = (int) ceil(circumfrence/lengthSet);
-    
-    PoolVector2Array polygons = PoolVector2Array();
-    for (int i = 0; i < points; i++) polygons.append(getVectorByAngle(radius, (float)(2*Math_PI / points) * i));
-    
-    set_polygon(polygons);
-}
-
-void Softbody2DCircle::_init()
-{
-    
-}
-
-
-void Softbody2DCircle::_ready()
-{
-    if (acceleration==0)  acceleration=acceleration_;
-    if (springFactor==0)  springFactor=springFactor_;
-    if (pressureFactor==0)  pressureFactor=pressureFactor_;
-    if (collisionFactor==0)  collisionFactor=collisionFactor_;
-    if (stiffnessFactor==0)  stiffnessFactor=stiffnessFactor_;
-
-    if (moveDecay==0)  moveDecay=moveDecay_;
-    if (springDecay==0)  springDecay=springDecay_;
-    if (pressureDecay==0)  pressureDecay=pressureDecay_;
-    if (collisionDecay==0)  collisionDecay=collisionDecay_;
-    if (stiffnessDecay==0)  stiffnessDecay=stiffnessDecay_;
-
-    if (lengthSet==0)  lengthSet=lengthSet_;
-    if (radius==0)  radius=radius_;
-    
-    if (useSoftbody==false) useSoftbody=true;
-    if (allowPhysics==false) allowPhysics=true;
-
-    if (acceleration==0)  use_acceleration=false;
-    if (springFactor==0)  use_springFactor=false;
-    if (pressureFactor==0)  use_pressureFactor=false;
-    if (collisionFactor==0)  use_collisionFactor=false;
-    if (stiffnessFactor==0)  use_stiffnessFactor=false;
-
-    
-    curve = Curve2D::_new();
-    adjustPolygon();
-    polygonInitial = get_polygon();
-    prnt = Object::cast_to<Node2D>(get_parent());
-    resetBlob();
-    allowPhysics=true;
-}
 Vector2 Softbody2DCircle::moveToAbs(int i )
     {
         return moveTo-blob[i];
@@ -298,7 +290,7 @@ void Softbody2DCircle::updateCollision()
 }
 void Softbody2DCircle::updateObserverArea()
 {
-   
+    
     PoolVector2Array AreaPolygon = PoolVector2Array();
     for (int i = 0; i < points; i++) AreaPolygon.append(blob[i]+normals[i]*ObserverAreaRadius);
     AreaShape-> set_polygon(AreaPolygon);
@@ -308,11 +300,14 @@ void Softbody2DCircle::updateObserverArea()
 void Softbody2DCircle::_physics_process(float delta)
 {
     if (!allowPhysics) return;
+    timeHelper+=delta;
+    if (timeHelper<1/fps) return;
     if (useSoftbody) {
-        SoftbodyPhysics(delta);
+        SoftbodyPhysics(timeHelper);
     } else {
-        HardbodyPhysics(delta);
+        HardbodyPhysics(timeHelper);
     }
+    timeHelper=0;
 
 }
 void Softbody2DCircle::SoftbodyPhysics(float delta)
@@ -325,7 +320,7 @@ void Softbody2DCircle::SoftbodyPhysics(float delta)
         Vector2 change;
         if (use_springFactor)
         {
-            Vector2 Distance = blob[i]-blob[nextIndex];
+             Vector2 Distance = blob[i]-blob[nextIndex];
             if (Distance.length()>lengths[i]*1.2)// if things are too far apart pull back together
             {
                 change = Distance.normalized() * (Distance.length()-lengths[i])/ 2 *springFactor;// setting Distance back to length
@@ -338,14 +333,12 @@ void Softbody2DCircle::SoftbodyPhysics(float delta)
                 changeSpring[nextIndex]+= change  ;
             }
         }
-
-        // ############ calculate changes for stiffness
-        if (use_springFactor)
+        if (use_stiffnessFactor)
         {
-            change= (center+blobInitial2Center[i])-blob[i];
-            changeStiffness[i] += change*stiffnessFactor ;
+        // ############ calculate changes for stiffness
+        change= (center+blobInitial2Center[i])-blob[i];
+        changeStiffness[i] += change*stiffnessFactor ;
         }
-        
         // ############ calculate changes for Collision
         
         if ((blobCollisions[i] -> get_slide_count()>0))
@@ -360,11 +353,11 @@ void Softbody2DCircle::SoftbodyPhysics(float delta)
             }
             changeCollision[i] += moveNormal*collisionFactor;
             collisionHappened = true;
-
         }
 
         if (moving) // move to Target
         {
+
             if (center.distance_to(moveTo)<20)// if one point close enough stop
             {
                 moving=false;
@@ -378,7 +371,7 @@ void Softbody2DCircle::SoftbodyPhysics(float delta)
                 direction = moveToAbs(i);
             }
             change = direction.normalized();
-            changeMove[i] += change*acceleration ; 
+            changeMove[i] += change*acceleration ;
         }    
     }
     //#################### Calculate changes in pressure
@@ -400,7 +393,6 @@ void Softbody2DCircle::SoftbodyPhysics(float delta)
             changePressure[i] += normal * dilationDistance *pressureFactor;
         }
     }
-
     // apply all changes
     for (int i = 0; i < points; i++)
     {
@@ -434,17 +426,16 @@ void Softbody2DCircle::SoftbodyPhysics(float delta)
     } else {
         centerChange = Vector2(0,0);
     }
-    
     if (moveParent)
     {
         prnt -> set_position(prnt -> get_position()+centerChange);//
         set_position(get_position()-centerChange);
-       
+        
     } else {
         set_position(get_position()+centerChange);
         moveTo-=centerChange;
+        
     }
-     
     for (int i = 0; i < points; i++)
     {
         // decay changes
@@ -455,7 +446,6 @@ void Softbody2DCircle::SoftbodyPhysics(float delta)
         changePressure[i]*=pressureDecay;
         changeMove[i]*=moveDecay;
     }
-    
     // Update
     updateCollision();
     if (observerareaExists) updateObserverArea();
@@ -561,3 +551,15 @@ void Softbody2DCircle::_draw()
     set_polygon(drawPoints);
 } 
 
+
+void Softbody2DCircle::adjustPolygon()
+{
+    // make polygon circle
+    circumfrence = radius * 2.0f * Math_PI ;
+    points = (int) ceil(circumfrence/lengthSet);
+    
+    PoolVector2Array polygons = PoolVector2Array();
+    for (int i = 0; i < points; i++) polygons.append(getVectorByAngle(radius, (float)(2*Math_PI / points) * i));
+    
+    set_polygon(polygons);
+}
